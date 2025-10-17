@@ -72,8 +72,8 @@ A simple way to deploy your own streaming stack with ARRs apps, Jellyfin &amp; J
    │   ├── movies
    │   └── tv
    └── media
-    ├── movies
-    └── tv
+       ├── movies
+       └── tv
    ```
 
 ## ⚠️ WARNING - Permission Issues on Windows Formatted Drives
