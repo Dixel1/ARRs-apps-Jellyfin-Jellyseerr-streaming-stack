@@ -2,13 +2,15 @@
 A simple way to deploy your own streaming stack with ARRs apps, Jellyfin &amp; Jellyseerr.
 
 ## Components
-- **ARRs apps**: A collection of reverse proxy applications to manage and route traffic
+- **ARRs apps**: A collection of applications for managing and automating media downloads.
     - **Prowlarr**: A web application that integrates with various indexers for media content.
     - **Radarr**: A movie collection manager for downloading and organizing movies.
     - **Sonarr**: A TV series collection manager for downloading and organizing TV shows.
 - **Jellyfin**: An open-source media server for streaming your personal media.
 - **Jellyseerr**: A self-hosted media request management tool for Jellyfin.
 - **Traefik**: A modern reverse proxy and load balancer.
+- **qBittorrent**: A lightweight and efficient BitTorrent client.
+
 ### Bonus
 - **Dockge**: A web-based Docker management tool.
 
