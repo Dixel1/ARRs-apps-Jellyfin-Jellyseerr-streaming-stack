@@ -34,4 +34,3 @@ A simple way to deploy your own streaming stack with ARRs apps, Jellyfin &amp; J
    ```bash
    docker-compose up -d
    ```
-

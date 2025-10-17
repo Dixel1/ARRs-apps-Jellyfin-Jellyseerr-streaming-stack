@@ -1,0 +1,24 @@
+services:
+  traefik:
+    image: traefik:v3 # Use the latest Traefik v3 image
+    container_name: traefik
+    restart: always
+    env_file: .env
+    networks:
+      - proxy # Connect to the external "proxy" network
+    ports:
+      - 80:80 # The HTTP port
+      - 443:443 # The HTTPS port
+      - 8080:8080 # The admin web access port
+    volumes:
+      - /etc/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro # Traefik configuration file Read-Only
+      - /etc/traefik/certs:/etc/traefik/certs:rw # SSL certificates Read-Write
+      - /var/log/traefik:/var/log/traefik:rw # Traefik logs Read-Write
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+    labels:
+      - traefik.enable=true # Enable Traefik for this container
+      - traefik.http.routers.dashboard.entrypoints=traefik # Define entrypoint for the dashboard
+      - traefik.http.routers.dashboard.service=api@internal # Enable the internal Traefik API service
+networks:
+  proxy:
+    external: true # Use an existing external network named "proxy"

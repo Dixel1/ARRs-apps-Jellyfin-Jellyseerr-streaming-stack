@@ -1,0 +1,50 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest # Use the latest LinuxServer.io Jellyfin image
+    container_name: jellyfin
+    restart: unless-stopped
+    environment:
+      - PUID=1000 # Set the user ID for file permissions
+      - PGID=1000 # Set the group ID for file permissions
+      - TZ=Europe/Paris # Set the timezone
+      - JELLYFIN_PublishedServerUrl=https://YOUR_DOMAIN_HERE # Set the published server URL
+    volumes:
+      - /srv/jellyfin/config:/config # Configuration files
+      - /srv/jellyfin/cache:/cache # Cache files
+      - /mnt/externalusb/data/media/:/data/media:ro # Media files (Read-Only)
+    devices:
+      - /dev/dri:/dev/dri # For hardware acceleration (optional)
+    networks:
+      - proxy # Connect to the external "proxy" network
+    labels:
+      - traefik.enable=true 
+      - traefik.http.routers.jellyfin-int.rule=Host(`stream.YOUR_DOMAIN_HERE`) # Define the routing rule based on the host
+      - traefik.http.routers.jellyfin-int.entrypoints=websecure # Use the websecure entrypoint
+      - traefik.http.routers.jellyfin-int.tls.certresolver=le # Use Let's Encrypt for TLS
+      - traefik.http.routers.jellyfin-int.tls.domains[0].main=YOUR_DOMAIN_HERE # Define the main domain for TLS
+      - traefik.http.routers.jellyfin-int.tls.domains[0].sans=*.YOUR_DOMAIN_HERE # Define the SANs for TLS
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest # Use the latest Jellyseerr image
+    container_name: jellyseerr
+    restart: unless-stopped
+    environment:
+      - LOG_LEVEL=info 
+      - TZ=Europe/Paris
+    volumes:
+      - /srv/jellyseerr:/app/config # Configuration files
+    networks:
+      - proxy # Connect to the external "proxy" network
+      - arr # Connect to the external "arr" network for communication with other services
+    labels:
+      - traefik.enable=true 
+      - traefik.docker.network=proxy
+      - traefik.http.routers.jellyseerr-int.rule=Host(`request.YOUR_DOMAIN_HERE`)
+      - traefik.http.routers.jellyseerr-int.entrypoints=websecure
+      - traefik.http.routers.jellyseerr-int.tls.certresolver=le
+      - traefik.http.routers.jellyseerr-int.tls.domains[0].main=YOUR_DOMAIN_HERE
+      - traefik.http.routers.jellyseerr-int.tls.domains[0].sans=*.YOUR_DOMAIN_HERE
+networks:
+  proxy:
+    external: true # Use an existing external network named "proxy"
+  arr:
+    external: true # Use an existing external network named "arr"

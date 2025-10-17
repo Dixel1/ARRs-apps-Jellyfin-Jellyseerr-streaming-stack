@@ -1,0 +1,89 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest # Use the latest Gluetun image
+    container_name: gluetun
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN # Required for VPN functionality
+    devices:
+      - /dev/net/tun:/dev/net/tun # TUN device for VPN
+    ports:
+      - 9090:9090 # qBittorrent WebUI
+    environment:
+      - TZ=Europe/Paris # Set the timezone
+      - VPN_SERVICE_PROVIDER=airvpn # Use AirVPN as the VPN service provider
+      - VPN_TYPE=wireguard # Use WireGuard protocol
+      - WIREGUARD_PRIVATE_KEY=${AIRVPN_PRIVATE_KEY} # WireGuard private key
+      - WIREGUARD_PRESHARED_KEY=${AIRVPN_PRESHARED_KEY} # WireGuard pre-shared key
+      - WIREGUARD_ADDRESSES=${AIRVPN_ADDRESSES} # WireGuard addresses
+      - FIREWALL_VPN_INPUT_PORTS=${VPN_PORT_FORWARD} # Firewall VPN input ports
+      - SERVER_REGION=Europe # Server region
+      - BLOCK_MALICIOUS=off # Block malicious traffic
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest # Use the latest LinuxServer.io qBittorrent image
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1000 # Set the user ID for file permissions
+      - PGID=1000 # Set the group ID for file permissions
+      - TZ=Europe/Paris # Set the timezone
+      - WEBUI_PORT=9090 # Set the WebUI port
+      - TORRENTING_PORT=${VPN_PORT_FORWARD} # Set the torrenting port to match the AirVPN forwarded port
+    volumes:
+      - ${ARRPATH}/qbittorrent:/config # Configuration files
+      - ${MEDIAPATH}/data/torrents:/data/torrents # Downloaded torrents
+    network_mode: service:gluetun # Share network with Gluetun for VPN
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest # Use the latest LinuxServer.io Prowlarr image
+    container_name: prowlarr
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - ${ARRPATH}/prowlarr:/config # Configuration files
+    ports:
+      - 9696:9696 # Prowlarr port
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest # Use the latest LinuxServer.io Radarr image
+    container_name: radarr
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - ${ARRPATH}/radarr:/config # Configuration files
+      - ${MEDIAPATH}/data:/data # Media files
+    ports:
+      - 7878:7878 # Radarr port
+    networks:
+      - default # Connect to the default network
+      - arr # Connect to the external "arr" network for communication with other services
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest # Use the latest LinuxServer.io Sonarr image
+    container_name: sonarr
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ${ARRPATH}/sonarr:/config # Configuration files
+      - ${MEDIAPATH}/data:/data # Media files
+    ports:
+      - 8989:8989 # Sonarr port
+    networks:
+      - default
+      - arr
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest # Use the latest Flaresolverr image
+    container_name: flaresolverr
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Paris
+      - LOG_LEVEL=info
+networks:
+  arr:
+    external: true # Use an existing external network named "arr"
