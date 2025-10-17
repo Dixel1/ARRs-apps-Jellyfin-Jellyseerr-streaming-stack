@@ -21,16 +21,22 @@ A simple way to deploy your own streaming stack with ARRs apps, Jellyfin &amp; J
 1. **Clone the Repository**
    ```bash
    git clone https://github.com/yourusername/ARRs-apps-Jellyfin-Jellyseerr-streaming-stack.git
-    cd ARRs-apps-Jellyfin-Jellyseerr-streaming-stack
+   cd ARRs-apps-Jellyfin-Jellyseerr-streaming-stack
     ```
 2. **Configure Environment Variables**
-   Copy the `.env.example` file to `.env` and update the variables as needed.
+   Copy the `.env` file and update the variables as needed.
    ```bash
-   cp .env.example .env
+   cp .env /your/path/to/.env
    ```
 
 3. **Start the Services**
    Use Docker Compose to start the services.
    ```bash
    docker-compose up -d
+   ```
+
+4. **Stop the Services (WITHOUT DESTROYING DATA)**
+   To stop the services, run:
+   ```bash
+   docker-compose down
    ```
