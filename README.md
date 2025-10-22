@@ -22,7 +22,7 @@ A simple way to deploy your own streaming stack with ARRs apps, Jellyfin &amp; J
 ## Setup Instructions
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/ARRs-apps-Jellyfin-Jellyseerr-streaming-stack.git
+   git clone https://github.com/Dixel1/ARRs-apps-Jellyfin-Jellyseerr-streaming-stack.git
    cd ARRs-apps-Jellyfin-Jellyseerr-streaming-stack
     ```
 2. **Configure Environment Variables**
